@@ -1,0 +1,10 @@
+<div class="container">
+  <header class="navbar navbar-light px-0 mb-5 py-3">
+    <a routerLink="/" class="navbar-brand mb-0 h1 mr-auto">Mindmeld Statistics</a>
+    <button *ngIf="isLoggedIn" (click)="logout()" type="button" class="btn btn-sm btn-light">Abmelden</button>
+  </header>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</div>

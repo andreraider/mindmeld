@@ -1,0 +1,97 @@
+version: '3.7'
+
+services:
+  mindmeld-backend:
+    container_name: mindmeld-backend
+    image: mindmeld-backend
+    expose:
+      - "3000"
+    networks:
+      - mindmeld-network
+    environment:
+      PORT: 3000
+      DATABASE_HOST: mindmeld-mariadb
+      DATABASE_PORT: 3306
+      DATABASE_USERNAME: mindmeld-user
+      DATABASE_PASSWORD: mindmeld-pwd
+      DATABASE_NAME: mindmeld
+      JWT_SECRET: tmqs#-$AF3H@9q*Z
+      JWT_EXPIRATION: 86400
+    depends_on:
+      - mindmeld-mariadb
+    restart: unless-stopped
+
+  mindmeld-mariadb:
+    container_name: mindmeld-mariadb
+    image: mariadb:latest
+    networks:
+      - mindmeld-network
+    environment:
+      MYSQL_ROOT_PASSWORD: root-pwd
+      MYSQL_DATABASE: mindmeld
+      MYSQL_USER: mindmeld-user
+      MYSQL_PASSWORD: mindmeld-pwd
+    expose:
+      - "3306"
+    volumes:
+      - ${PWD}/mariadb:/var/lib/mysql
+
+  mindmeld-frontend:
+    container_name: mindmeld-frontend
+    image: mindmeld-frontend
+    expose:
+      - "80"
+    networks:
+      - mindmeld-network
+    depends_on:
+      - mindmeld-backend
+    restart: unless-stopped
+
+  mindmeld-webserver:
+    image: nginx:mainline-alpine
+    container_name: mindmeld-webserver
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - web-root:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - dhparam:/etc/ssl/certs
+    depends_on:
+      - mindmeld-backend
+    networks:
+      - mindmeld-network
+
+  mindmeld-certbot:
+    image: certbot/certbot
+    container_name: mindmeld-certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - mindmeld-webserver
+    command: certonly --webroot --webroot-path=/var/www/html --email andre@raider.dev --agree-tos --no-eff-email --force-renewal -d mindmeld.raider.dev
+
+volumes:
+  certbot-etc:
+  certbot-var:
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/andre/apps/mindmeld/views/
+      o: bind
+  dhparam:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/andre/apps/mindmeld/dhparam/
+      o: bind
+
+networks:
+  mindmeld-network:
+    driver: bridge

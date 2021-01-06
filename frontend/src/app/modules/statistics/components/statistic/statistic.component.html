@@ -1,0 +1,46 @@
+<h1 class="mb-4">{{ statistic?.name }}</h1>
+
+<ngx-spinner bdColor="rgba(255,255,255,0.8)" color="#444444"></ngx-spinner>
+
+<div *ngIf="loaded">
+  <div class="mb-5">
+    Erstellt: {{ statistic?.created | date:'mediumDate' }} - {{ statistic?.created | date:'shortTime' }} Uhr,
+
+    Gestarted:
+    <span *ngIf="statistic?.started !== null">{{ statistic.started | date:'mediumDate' }} - {{ statistic.started | date:'shortTime' }} Uhr</span>
+    <span *ngIf="statistic?.started === null"><span class="text-muted">Nicht gestartet</span></span>,
+
+    Beended:
+    <span *ngIf="statistic?.ended !== null">{{ statistic.ended | date:'mediumDate' }} - {{ statistic.ended | date:'shortTime' }} Uhr</span>
+    <span *ngIf="statistic?.ended === null"><span class="text-muted">Nicht beendet</span></span>,
+    Dauer: {{ statistic?.duration }} Minuten
+  </div>
+  <div style="width: 100%; height: 300px">
+    <ngx-charts-line-chart *ngIf="this.statistic?.started !== null"
+                           [results]="data"
+                           [legend]="true"
+                           [showGridLines]="false"
+                           yScaleMin="0"
+                           yScaleMax="1"
+                           [xScaleMin]="xScaleMin"
+                           [xScaleMax]="xScaleMax"
+                           legendPosition="below"
+                           legendTitle="Teilnehmende"
+                           [showXAxisLabel]="false"
+                           [showYAxisLabel]="false"
+                           [xAxis]="false"
+                           [yAxis]="true"
+                           [timeline]="true"
+                           (select)="onSelect($event)"
+                           (activate)="onActivate($event)"
+                           (deactivate)="onDeactivate($event)"
+    >
+      <ng-template #tooltipTemplate let-model="model">
+        <div class="tooltip">
+          {{ model.value | number }}
+        </div>
+      </ng-template>
+    </ngx-charts-line-chart>
+  </div>
+</div>
+

@@ -1,0 +1,45 @@
+<h1 class="mb-4">Übersicht</h1>
+
+<ngx-spinner bdColor="rgba(255,255,255,0.8)" color="#444444"></ngx-spinner>
+
+<table class="table w-100">
+  <thead>
+    <tr>
+      <th>Gruppenname</th>
+      <th>Erstellt</th>
+      <th>Dauer</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody *ngIf="statistics.length !== 0">
+    <tr *ngFor="let statistic of statistics">
+      <td>
+        {{ statistic.name }}
+      </td>
+      <td>
+        {{ statistic.created | date:'mediumDate' }} - {{ statistic.created | date:'shortTime' }} Uhr
+      </td>
+      <td>
+        {{ statistic.duration }} Min.
+      </td>
+      <td>
+        <span *ngIf="statistic.started === null && statistic.ended === null">Erstellt</span>
+        <span *ngIf="statistic.started !== null && statistic.ended === null">Gestartet</span>
+        <span *ngIf="statistic.ended !== null">Beended</span>
+      </td>
+      <td class="text-right">
+        <button type="button" class="btn btn-sm btn-info mr-2" (click)="showDetails(statistic.id)">Details</button>
+        <button type="button" class="btn btn-sm btn-danger" (click)="openDeleteStatisticPopup(statistic.id)">Löschen</button>
+      </td>
+    </tr>
+  </tbody>
+
+  <tbody *ngIf="statistics.length === 0">
+    <tr>
+      <td colspan="5">Es liegen aktuell keine Statistiken vor.</td>
+    </tr>
+  </tbody>
+
+</table>

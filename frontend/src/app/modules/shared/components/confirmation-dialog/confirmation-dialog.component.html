@@ -1,0 +1,16 @@
+<div class="modal-header">
+  <h1 class="modal-title" [class.text-danger]="dangerous">{{ headline }}</h1>
+</div>
+
+<div class="modal-body">
+  <div [innerHTML]="message"></div>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-light w-100-sm mb-2 mb-md-0 mr-md-2" (click)="close(false)">
+    {{ cancelButtonText }}
+  </button>
+  <button class="btn" [class.btn-danger]="dangerous" [class.btn-primary]="!dangerous" (click)="close(true)">
+    {{ confirmButtonText }}
+  </button>
+</div>
